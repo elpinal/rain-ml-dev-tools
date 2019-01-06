@@ -20,7 +20,7 @@ func main() {
 
 func run() error {
 	if err := update(); err != nil {
-		return err
+		return errors.Wrap(err, "updating")
 	}
 	return test(os.Getenv("HOME"))
 }
@@ -28,9 +28,9 @@ func run() error {
 func update() error {
 	cmd := exec.Command("rainy", "update", "master")
 	// cmd.Stdout = os.Stdout
-	// cmd.Stderr = os.Stderr
-	// cmd.Env = append(os.Environ(), "RUST_LOG=rainy")
-	return cmd.Run()
+	cmd.Stderr = os.Stderr
+	cmd.Env = append(os.Environ(), "RUST_LOG=rainy")
+	return errors.Wrap(cmd.Run(), "rainy")
 }
 
 func test(home string) error {
